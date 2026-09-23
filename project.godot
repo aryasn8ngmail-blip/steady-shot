@@ -1,0 +1,29 @@
+config_version=5
+
+[application]
+
+config/name="Steady Shot"
+config/description="Therapeutic horseback archery game (DTx)"
+config/features=PackedStringArray("4.3", "Forward Plus")
+run/main_scene="res://ui/calibration/CalibrationScreen.tscn"
+
+[autoload]
+
+MultiTouchManager="*res://input/MultiTouchManager.gd"
+SettingsManager="*res://core/SettingsManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="mobile"

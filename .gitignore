@@ -1,0 +1,13 @@
+# Godot engine build artifacts
+.godot/
+*.import
+export_presets.cfg
+
+# OS / Editor temporary files
+.DS_Store
+*.tmp
+*.log
+
+# Saved user settings in test environments
+*.json
+!/docs/*.json
