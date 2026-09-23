@@ -10,8 +10,8 @@ extends Control
 @onready var timeout_timer: Timer = $TimeoutTimer
 
 var calibration_step: int = 0
-var steps := ["l_stick", "r_stick", "balance_pad", "trigger"]
-var step_names := {
+var steps: Array[String] = ["l_stick", "r_stick", "balance_pad", "trigger"]
+var step_names: Dictionary = {
 	"l_stick": "Left Stick (Movement)",
 	"r_stick": "Right Stick (Aiming)",
 	"balance_pad": "Balance Pad",
@@ -31,9 +31,9 @@ func _start_step() -> void:
 		_calibration_complete()
 		return
 
-	var current_control := steps[calibration_step]
+	var current_control: String = steps[calibration_step]
 	title_label.text = "4-Finger Calibration"
-	hint_label.text = "Place a finger on the highlighted zone for: " + step_names[current_control]
+	hint_label.text = "Place a finger on the highlighted zone for: " + String(step_names.get(current_control, ""))
 	_highlight_zone(current_control)
 	timeout_timer.start(10.0)
 
@@ -61,7 +61,7 @@ func _on_touch_started(finger_id: int, norm_pos: Vector2) -> void:
 	if calibration_step >= steps.size():
 		return
 
-	var current_control := steps[calibration_step]
+	var current_control: String = steps[calibration_step]
 	var zone_node := _get_target_zone_node(current_control)
 
 	if zone_node != null:

@@ -46,9 +46,9 @@ func _load_presets_ui() -> void:
 	if has_node("/root/SettingsManager"):
 		var sm = get_node("/root/SettingsManager")
 		var saved_layouts: Dictionary = sm.settings.get("saved_layouts", {})
-		var idx := 1
+		var idx: int = 1
 		for layout_name in saved_layouts:
-			preset_option.add_item(layout_name, idx)
+			preset_option.add_item(String(layout_name), idx)
 			idx += 1
 
 func _apply_loaded_settings() -> void:
@@ -66,8 +66,8 @@ func _apply_loaded_settings() -> void:
 func _apply_control_config(c_name: String, node: Control, sm: Node) -> void:
 	var cfg: Dictionary = sm.get_control_config(c_name)
 	var pos_dict: Dictionary = cfg.get("position", {"x": 0.5, "y": 0.5})
-	var viewport_size := get_viewport_rect().size
-	node.position = Vector2(pos_dict.get("x", 0.5) * viewport_size.x, pos_dict.get("y", 0.5) * viewport_size.y)
+	var viewport_size: Vector2 = get_viewport_rect().size
+	node.position = Vector2(float(pos_dict.get("x", 0.5)) * viewport_size.x, float(pos_dict.get("y", 0.5)) * viewport_size.y)
 	node.scale = Vector2.ONE * float(cfg.get("scale", 1.0))
 	node.rotation_degrees = float(cfg.get("rotation", 0.0))
 	node.modulate = Color(1, 1, 1, float(cfg.get("opacity", 0.85)))
@@ -76,12 +76,12 @@ func _save_current_control_config() -> void:
 	if not has_node("/root/SettingsManager"):
 		return
 	var sm = get_node("/root/SettingsManager")
-	var node := _get_node_by_name(current_control_name)
+	var node: Control = _get_node_by_name(current_control_name)
 	if node == null:
 		return
 
-	var viewport_size := get_viewport_rect().size
-	var cfg := {
+	var viewport_size: Vector2 = get_viewport_rect().size
+	var cfg: Dictionary = {
 		"position": {"x": clamp(node.position.x / viewport_size.x, 0.0, 1.0), "y": clamp(node.position.y / viewport_size.y, 0.0, 1.0)},
 		"scale": node.scale.x,
 		"rotation": node.rotation_degrees,
@@ -98,7 +98,7 @@ func _get_node_by_name(c_name: String) -> Control:
 	return null
 
 func _update_sliders_for_current() -> void:
-	var node := _get_node_by_name(current_control_name)
+	var node: Control = _get_node_by_name(current_control_name)
 	if node != null:
 		scale_slider.value = node.scale.x
 		rotation_slider.value = node.rotation_degrees
@@ -113,19 +113,19 @@ func _on_control_selected(idx: int) -> void:
 	_update_sliders_for_current()
 
 func _on_scale_changed(val: float) -> void:
-	var node := _get_node_by_name(current_control_name)
+	var node: Control = _get_node_by_name(current_control_name)
 	if node != null:
 		node.scale = Vector2.ONE * clamp(val, 0.6, 1.6)
 		_save_current_control_config()
 
 func _on_rotation_changed(val: float) -> void:
-	var node := _get_node_by_name(current_control_name)
+	var node: Control = _get_node_by_name(current_control_name)
 	if node != null:
 		node.rotation_degrees = val
 		_save_current_control_config()
 
 func _on_opacity_changed(val: float) -> void:
-	var node := _get_node_by_name(current_control_name)
+	var node: Control = _get_node_by_name(current_control_name)
 	if node != null:
 		node.modulate = Color(1, 1, 1, clamp(val, 0.2, 1.0))
 		_save_current_control_config()
@@ -134,10 +134,10 @@ func _on_mirror_pressed() -> void:
 	if not has_node("/root/SettingsManager"):
 		return
 	var sm = get_node("/root/SettingsManager")
-	var controls := ["l_stick", "balance_pad", "r_stick", "trigger"]
+	var controls: Array[String] = ["l_stick", "balance_pad", "r_stick", "trigger"]
 
 	for c_name in controls:
-		var cfg = sm.get_control_config(c_name)
+		var cfg: Dictionary = sm.get_control_config(c_name)
 		if cfg.has("position") and cfg["position"].has("x"):
 			cfg["position"]["x"] = clamp(1.0 - float(cfg["position"]["x"]), 0.0, 1.0)
 			sm.set_control_config(c_name, cfg)
@@ -156,14 +156,14 @@ func _on_recalibrate_pressed() -> void:
 func _on_save_preset_pressed() -> void:
 	if has_node("/root/SettingsManager"):
 		var sm = get_node("/root/SettingsManager")
-		var preset_name := "Layout_" + str(Time.get_unix_time_from_system())
+		var preset_name: String = "Layout_" + str(Time.get_unix_time_from_system())
 		sm.save_named_layout(preset_name)
 		_load_presets_ui()
 
 func _on_preset_selected(idx: int) -> void:
 	if idx <= 0:
 		return
-	var layout_name := preset_option.get_item_text(idx)
+	var layout_name: String = preset_option.get_item_text(idx)
 	if has_node("/root/SettingsManager"):
 		var sm = get_node("/root/SettingsManager")
 		if sm.load_named_layout(layout_name):
@@ -172,11 +172,11 @@ func _on_preset_selected(idx: int) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventScreenTouch:
 		if event.pressed:
-			var node := _get_node_by_name(current_control_name)
+			var node: Control = _get_node_by_name(current_control_name)
 			if node != null:
-				var m_pos = event.position
-				var local_pos = node.get_global_transform().affine_inverse() * m_pos
-				var node_rect = Rect2(Vector2.ZERO, node.size)
+				var m_pos: Vector2 = event.position
+				var local_pos: Vector2 = node.get_global_transform().affine_inverse() * m_pos
+				var node_rect := Rect2(Vector2.ZERO, node.size)
 				if node_rect.has_point(local_pos):
 					is_dragging = true
 					drag_start_offset = m_pos - node.position
@@ -185,7 +185,7 @@ func _gui_input(event: InputEvent) -> void:
 
 	elif event is InputEventMouseMotion or event is InputEventScreenDrag:
 		if is_dragging:
-			var node := _get_node_by_name(current_control_name)
+			var node: Control = _get_node_by_name(current_control_name)
 			if node != null:
 				node.position = event.position - drag_start_offset
 				_save_current_control_config()
