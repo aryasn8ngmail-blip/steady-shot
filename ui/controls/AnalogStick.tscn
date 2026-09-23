@@ -9,4 +9,5 @@ anchors_preset = 0
 offset_right = 160.0
 offset_bottom = 160.0
 pivot_offset = Vector2(80, 80)
+mouse_filter = 2
 script = ExtResource("1_analog")

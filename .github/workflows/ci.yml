@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Setup Godot Engine
+        uses: chickensoft-nobody/setup-godot@v1
+        with:
+          version: 4.3.0
+          use-dotnet: false
+
       - name: Run Unit Tests
         run: |
           python3 tests/run_tests.py
